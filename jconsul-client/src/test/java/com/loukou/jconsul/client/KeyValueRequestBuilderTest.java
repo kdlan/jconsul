@@ -84,6 +84,22 @@ public class KeyValueRequestBuilderTest {
     }
 
     @Test
+    public void testDelete(){
+        boolean success=jconsul.keyValue().put("/test/abc").flags(123123131l).value("xxxxxx");
+        assertTrue(success);
+        JConsulResponse<Value> response=jconsul.keyValue().get("test/abc").response();
+
+        boolean result=jconsul.keyValue().delete("test/abc").cas(response.getIndex()-1).execute();
+        assertFalse(result);
+        result=jconsul.keyValue().delete("test/abc").cas(response.getIndex()).execute();
+        assertTrue(success);
+    }
+
+
+
+
+
+    @Test
     public void testCallback() throws Exception {
         final int expect = 10;
         final AtomicInteger count = new AtomicInteger(0);

@@ -167,7 +167,7 @@ public class KeyValueRequestBuilder extends JConsulRequestBuilder {
         }
 
 
-        public boolean value() {
+        public boolean execute() {
             String result = getPlainResult("DELETE", buildPath(key));
             return Boolean.parseBoolean(result);
         }
