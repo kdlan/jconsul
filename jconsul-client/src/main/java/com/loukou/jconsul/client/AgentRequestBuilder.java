@@ -36,13 +36,33 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
         });
     }
 
-    public List<Member> membersWan() {
-        addParameter("wan", true);
+    public List<Member> members(boolean wan) {
+        addParameter("wan", wan);
         return members();
     }
 
     public Agent self() {
         return getJsonResult("GET", "/agent/self", Agent.class);
+    }
+
+    public void maintenance(boolean enable) {
+        addParameter("enable", enable);
+        getPlainResult("PUT", "/agent/maintenance");
+    }
+
+    public void maintenance(boolean enable, String reason) {
+        addParameter("reason", reason);
+        maintenance(enable);
+    }
+
+    public void serviceMaintenance(String serviceId, boolean enable) {
+        addParameter("enable", enable);
+        getPlainResult("PUT", "/agent/service/maintenance/" + serviceId);
+    }
+
+    public void serviceMaintenance(String serviceId, boolean enable, String reason) {
+        addParameter("reason", reason);
+        serviceMaintenance(serviceId, enable);
     }
 
     public RegisterStatus registerCheck(Check check) {
@@ -53,6 +73,25 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
             checkId = check.getName();
         }
         return new CheckStatus(checkId);
+    }
+
+    public RegisterStatus registerHTTPCheck(String checkId, String name, String httpUrl, int timeout, int interval) {
+        Check check = new Check();
+        check.setId(checkId);
+        check.setName(name);
+        check.setHttp(httpUrl);
+        check.setTimeout(timeout + "s");
+        check.setInterval(interval + "s");
+        return registerCheck(check);
+    }
+
+    public RegisterStatus registerHTTPCheck(String checkId, String name, String httpUrl, int interval) {
+        Check check = new Check();
+        check.setId(checkId);
+        check.setName(name);
+        check.setHttp(httpUrl);
+        check.setInterval(interval + "s");
+        return registerCheck(check);
     }
 
     public RegisterStatus registerScriptCheck(String checkId, String name, String script, int interval) {
@@ -100,7 +139,7 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
         return registerService(service);
     }
 
-    public RegisterStatus registerService(String id, String name, int port, int ttl, String... tags) {
+    public RegisterStatus registerTTLService(String id, String name, int port, int ttl, String... tags) {
 
         ServiceRegistration.Check check = new ServiceRegistration.Check();
         check.setTtl(ttl + "s");
@@ -108,9 +147,27 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
         return registerService(id, name, port, check, tags);
     }
 
-    public RegisterStatus registerService(String id, String name, int port, String script, int interval, String... tags) {
+    public RegisterStatus registerScriptService(String id, String name, int port, String script, int interval,
+            String... tags) {
         ServiceRegistration.Check check = new ServiceRegistration.Check();
         check.setScript(script);
+        check.setInterval(interval + "s");
+        return registerService(id, name, port, check, tags);
+    }
+
+    public RegisterStatus registerHTTPService(String id, String name, int port, String httpUrl, int timeout,
+            int interval, String... tags) {
+        ServiceRegistration.Check check = new ServiceRegistration.Check();
+        check.setHttp(httpUrl);
+        check.setTimeout(timeout + "s");
+        check.setInterval(interval + "s");
+        return registerService(id, name, port, check, tags);
+    }
+
+    public RegisterStatus registerHTTPService(String id, String name, int port, String httpUrl, int interval,
+            String... tags) {
+        ServiceRegistration.Check check = new ServiceRegistration.Check();
+        check.setHttp(httpUrl);
         check.setInterval(interval + "s");
         return registerService(id, name, port, check, tags);
     }
@@ -119,20 +176,23 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
         return new ServiceStatus(serviceId);
     }
 
-    public interface RegisterStatus{
-        public void deregister() ;
+    public interface RegisterStatus {
+        public void deregister();
 
-        public void pass() ;
-        public void pass(String note) ;
-        public void warn() ;
+        public void pass();
 
-        public void warn(String note) ;
-        public void fail() ;
+        public void pass(String note);
 
-        public void fail(String note) ;
+        public void warn();
+
+        public void warn(String note);
+
+        public void fail();
+
+        public void fail(String note);
     }
 
-    public class CheckStatus implements RegisterStatus{
+    public class CheckStatus implements RegisterStatus {
         private final String checkId;
 
         protected CheckStatus(String checkId) {
@@ -189,7 +249,6 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
         public void deregister() {
             getPlainResult("GET", "/agent/service/deregister/" + serviceId);
         }
-
 
     }
 }

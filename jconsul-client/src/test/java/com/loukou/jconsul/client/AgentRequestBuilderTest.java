@@ -136,7 +136,7 @@ public class AgentRequestBuilderTest {
         String serviceId = "test";
         String checkId = "service:" + serviceId;
 
-        RegisterStatus status = jconsul.agent().registerService(serviceId,serviceId,1234,10,"a","b");
+        RegisterStatus status = jconsul.agent().registerTTLService(serviceId,serviceId,1234,10,"a","b");
 
         Map<String, Service> map;
         Map<String, HealthCheck> checkMap;

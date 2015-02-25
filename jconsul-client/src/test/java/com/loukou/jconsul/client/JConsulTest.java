@@ -11,7 +11,7 @@ import com.ning.http.client.Response;
 
 public class JConsulTest {
 
-    @Test
+//    @Test
     public void test() throws Exception{
         new JConsul();
 
@@ -31,6 +31,7 @@ public class JConsulTest {
             }
         });
         Thread.sleep(1000);
+
 //        f.get();
     }
 

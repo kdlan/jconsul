@@ -2,7 +2,6 @@ package com.loukou.jconsul.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -15,12 +14,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.loukou.jconsul.client.JConsul;
-import com.loukou.jconsul.client.JConsulResponseCallback;
+import com.google.common.base.Optional;
 import com.loukou.jconsul.client.model.ConsistencyMode;
 import com.loukou.jconsul.client.model.JConsulResponse;
 import com.loukou.jconsul.client.model.kv.Value;
-import com.google.common.base.Optional;
 
 public class KeyValueRequestBuilderTest {
 
@@ -62,7 +59,7 @@ public class KeyValueRequestBuilderTest {
 
     @Test
     public void testGetKeys() {
-        JConsulResponse<List<String>> response = jconsul.keyValue().keys("a")
+        JConsulResponse<List<String>> response = jconsul.keyValue().get("a").keys()
                 .consistency(ConsistencyMode.STALE).response();
         assertTrue(response.getResult().isPresent());
         List<String> result = response.getResult().get();

@@ -39,7 +39,7 @@ public class JConsul {
     }
 
     public void close() {
-
+        processor.close();
     }
 
 }

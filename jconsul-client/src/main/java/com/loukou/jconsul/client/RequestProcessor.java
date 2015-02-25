@@ -239,4 +239,8 @@ class RequestProcessor {
 
     }
 
+    public void close() {
+        client.close();
+    }
+
 }

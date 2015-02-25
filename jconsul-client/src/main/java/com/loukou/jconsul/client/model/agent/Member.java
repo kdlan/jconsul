@@ -9,8 +9,8 @@ public class Member {
     @SerializedName("Name")
     private String name;
 
-    @SerializedName("Address")
-    private String address;
+    @SerializedName("Addr")
+    private String addr;
 
     @SerializedName("Port")
     private int port;
@@ -47,12 +47,12 @@ public class Member {
         this.name = name;
     }
 
-    public String getAddress() {
-        return address;
+    public String getAddr() {
+        return addr;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setAddr(String addr) {
+        this.addr = addr;
     }
 
     public int getPort() {

@@ -26,13 +26,13 @@ public class KeyValueRequestBuilder extends JConsulRequestBuilder {
         return new ValueRequestBuilder(key);
     }
 
-    public KeysRequestBuilder keys(String key) {
-        return new KeysRequestBuilder(key);
-    }
-
-    public RecurseRequestBuilder recurse(String key) {
-        return new RecurseRequestBuilder(key);
-    }
+    // public KeysRequestBuilder keys(String key) {
+    // return new KeysRequestBuilder(key);
+    // }
+    //
+    // public RecurseRequestBuilder recurse(String key) {
+    // return new RecurseRequestBuilder(key);
+    // }
 
     public PutRequestBuilder put(String key) {
         return new PutRequestBuilder(key);
@@ -52,6 +52,14 @@ public class KeyValueRequestBuilder extends JConsulRequestBuilder {
 
         public RawRequestBuilder raw() {
             return new RawRequestBuilder(key);
+        }
+
+        public KeysRequestBuilder keys() {
+            return new KeysRequestBuilder(key);
+        }
+
+        public RecurseRequestBuilder recurse() {
+            return new RecurseRequestBuilder(key);
         }
 
     }
@@ -165,7 +173,6 @@ public class KeyValueRequestBuilder extends JConsulRequestBuilder {
             addParameter("cas", index);
             return this;
         }
-
 
         public boolean execute() {
             String result = getPlainResult("DELETE", buildPath(key));

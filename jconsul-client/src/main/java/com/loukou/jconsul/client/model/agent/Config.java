@@ -9,6 +9,9 @@ public class Config {
     @SerializedName("Bootstrap")
     private boolean bootstrap;
 
+    @SerializedName("BootstrapExpect")
+    private boolean bootstrapExpect;
+
     @SerializedName("Server")
     private boolean server;
 
@@ -20,6 +23,9 @@ public class Config {
 
     @SerializedName("DNSRecursor")
     private String dnsRecursor;
+
+    @SerializedName("DNSRecursors")
+    private List<String> dnsRecursors;
 
     @SerializedName("Domain")
     private String domain;
@@ -95,6 +101,14 @@ public class Config {
         this.bootstrap = bootstrap;
     }
 
+    public boolean isBootstrapExpect() {
+        return bootstrapExpect;
+    }
+
+    public void setBootstrapExpect(boolean bootstrapExpect) {
+        this.bootstrapExpect = bootstrapExpect;
+    }
+
     public boolean isServer() {
         return server;
     }
@@ -125,6 +139,14 @@ public class Config {
 
     public void setDnsRecursor(String dnsRecursor) {
         this.dnsRecursor = dnsRecursor;
+    }
+
+    public List<String> getDnsRecursors() {
+        return dnsRecursors;
+    }
+
+    public void setDnsRecursors(List<String> dnsRecursors) {
+        this.dnsRecursors = dnsRecursors;
     }
 
     public String getDomain() {
@@ -302,4 +324,5 @@ public class Config {
     public void setRejoinAfterLeave(boolean rejoinAfterLeave) {
         this.rejoinAfterLeave = rejoinAfterLeave;
     }
+
 }
