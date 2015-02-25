@@ -1,4 +1,4 @@
-package com.loukou.jconsul.client.model.agent;
+package com.loukou.jconsul.client.model;
 
 import java.util.Map;
 

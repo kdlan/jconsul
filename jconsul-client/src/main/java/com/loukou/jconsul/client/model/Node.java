@@ -1,4 +1,4 @@
-package com.loukou.jconsul.client.model.health;
+package com.loukou.jconsul.client.model;
 
 import com.google.gson.annotations.SerializedName;
 

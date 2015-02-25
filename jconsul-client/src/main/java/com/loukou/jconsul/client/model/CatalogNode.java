@@ -1,9 +1,7 @@
-package com.loukou.jconsul.client.model.catalog;
+package com.loukou.jconsul.client.model;
 
 import java.util.Map;
 
-import com.loukou.jconsul.client.model.health.Node;
-import com.loukou.jconsul.client.model.health.Service;
 import com.google.gson.annotations.SerializedName;
 
 public class CatalogNode {

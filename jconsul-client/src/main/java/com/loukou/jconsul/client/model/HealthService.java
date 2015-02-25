@@ -1,10 +1,10 @@
-package com.loukou.jconsul.client.model.health;
+package com.loukou.jconsul.client.model;
 
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ServiceHealth {
+public class HealthService {
 
     @SerializedName("Node")
     private Node node;

@@ -1,4 +1,4 @@
-package com.loukou.jconsul.client.model.kv;
+package com.loukou.jconsul.client.model;
 
 import com.google.gson.annotations.SerializedName;
 import com.ning.http.util.Base64;

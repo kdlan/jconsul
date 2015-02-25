@@ -1,4 +1,4 @@
-package com.loukou.jconsul.client.model.catalog;
+package com.loukou.jconsul.client.model;
 
 import java.util.List;
 

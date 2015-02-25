@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 import com.loukou.jconsul.client.model.ConsistencyMode;
 import com.loukou.jconsul.client.model.JConsulResponse;
-import com.loukou.jconsul.client.model.kv.Value;
+import com.loukou.jconsul.client.model.Value;
 
 public class KeyValueRequestBuilderTest {
 

@@ -1,4 +1,4 @@
-package com.loukou.jconsul.client.model.agent;
+package com.loukou.jconsul.client.model;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ public class Config {
     private boolean bootstrap;
 
     @SerializedName("BootstrapExpect")
-    private boolean bootstrapExpect;
+    private int bootstrapExpect;
 
     @SerializedName("Server")
     private boolean server;
@@ -101,11 +101,11 @@ public class Config {
         this.bootstrap = bootstrap;
     }
 
-    public boolean isBootstrapExpect() {
+    public int getBootstrapExpect() {
         return bootstrapExpect;
     }
 
-    public void setBootstrapExpect(boolean bootstrapExpect) {
+    public void setBootstrapExpect(int bootstrapExpect) {
         this.bootstrapExpect = bootstrapExpect;
     }
 

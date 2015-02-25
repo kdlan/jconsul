@@ -3,7 +3,7 @@ package com.loukou.jconsul.client;
 import java.util.List;
 
 import com.loukou.jconsul.client.model.JConsulResponse;
-import com.loukou.jconsul.client.model.kv.Value;
+import com.loukou.jconsul.client.model.Value;
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
 
@@ -25,14 +25,6 @@ public class KeyValueRequestBuilder extends JConsulRequestBuilder {
     public ValueRequestBuilder get(String key) {
         return new ValueRequestBuilder(key);
     }
-
-    // public KeysRequestBuilder keys(String key) {
-    // return new KeysRequestBuilder(key);
-    // }
-    //
-    // public RecurseRequestBuilder recurse(String key) {
-    // return new RecurseRequestBuilder(key);
-    // }
 
     public PutRequestBuilder put(String key) {
         return new PutRequestBuilder(key);

@@ -38,6 +38,10 @@ public class JConsul {
         return new CatalogRequestBuilder(processor);
     }
 
+    public HealthRequestBuilder health(){
+        return new HealthRequestBuilder(processor);
+    }
+
     public void close() {
         processor.close();
     }

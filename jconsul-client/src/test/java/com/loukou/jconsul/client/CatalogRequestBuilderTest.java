@@ -14,10 +14,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.loukou.jconsul.client.model.CatalogNode;
 import com.loukou.jconsul.client.model.JConsulResponse;
-import com.loukou.jconsul.client.model.catalog.CatalogNode;
-import com.loukou.jconsul.client.model.health.Node;
-import com.loukou.jconsul.client.model.health.Service;
+import com.loukou.jconsul.client.model.Node;
+import com.loukou.jconsul.client.model.Service;
 import com.google.common.base.Optional;
 
 public class CatalogRequestBuilderTest {

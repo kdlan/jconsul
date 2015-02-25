@@ -3,17 +3,28 @@ package com.loukou.jconsul.client;
 import java.util.List;
 import java.util.Map;
 
-import com.loukou.jconsul.client.CatalogRegisterBuilder.NodeBuilder;
-import com.loukou.jconsul.client.model.JConsulResponse;
-import com.loukou.jconsul.client.model.catalog.CatalogNode;
-import com.loukou.jconsul.client.model.catalog.CatalogService;
-import com.loukou.jconsul.client.model.health.Node;
-import com.loukou.jconsul.client.util.JConsulUtils;
-import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
+import com.loukou.jconsul.client.CatalogRegisterBuilder.NodeBuilder;
+import com.loukou.jconsul.client.model.CatalogNode;
+import com.loukou.jconsul.client.model.CatalogService;
+import com.loukou.jconsul.client.model.Node;
 
 public class CatalogRequestBuilder extends JConsulRequestBuilder {
+
+    @SuppressWarnings("serial")
+    private static final TypeToken<List<Node>> LIST_NODE_TOKEN = new TypeToken<List<Node>>() {
+    };
+
+    @SuppressWarnings("serial")
+    private static final TypeToken<List<CatalogService>> LIST_SERVICE_TOKEN = new TypeToken<List<CatalogService>>() {
+    };
+
+    @SuppressWarnings("serial")
+    private static final TypeToken<Map<String, List<String>>> MAP_STRING_LIST_STRING_TOKEN = new TypeToken<Map<String, List<String>>>() {
+    };
+
+    private static final TypeToken<CatalogNode> NODE_TOKEN = TypeToken.of(CatalogNode.class);
 
     CatalogRequestBuilder(RequestProcessor processor) {
         super(processor);
@@ -49,112 +60,66 @@ public class CatalogRequestBuilder extends JConsulRequestBuilder {
         return new NodeRequestBuilder(node);
     }
 
-    private abstract class ResultBuilder<T extends ResultBuilder<T, V>, V> extends
-            BlockingAndConsistencyBuilder<ResultBuilder<T, V>> {
-        private final String path;
-        private final TypeToken<V> type;
+    public class ServiceListRequestBuilder extends
+            DirectResultBuilder<ServiceListRequestBuilder, Map<String, List<String>>> {
 
-        private ResultBuilder(Class<T> subClass, String path, TypeToken<V> type) {
-            super(subClass, CatalogRequestBuilder.this);
-            this.path = path;
-            this.type = type;
-        }
-
-        public Optional<V> value() {
-            return response().getResult();
-        }
-
-        public JConsulResponse<V> response() {
-            return getJConsulResponse("GET", path, type);
-        }
-
-        public void async(JConsulResponseCallback<V> callback) {
-            executeResult("GET", path, type, callback);
-        }
-    }
-
-    public class ServiceListRequestBuilder extends ResultBuilder<ServiceListRequestBuilder, Map<String, List<String>>> {
-        @SuppressWarnings("serial")
         private ServiceListRequestBuilder() {
-            super(ServiceListRequestBuilder.class, "/catalog/services", new TypeToken<Map<String, List<String>>>() {
-            });
+            super("/catalog/services", MAP_STRING_LIST_STRING_TOKEN, ServiceListRequestBuilder.class,
+                    CatalogRequestBuilder.this);
         }
     }
 
-    public class ServiceRequestBuilder extends BlockingAndConsistencyBuilder<ServiceRequestBuilder> {
-        @SuppressWarnings("serial")
-        private final TypeToken<List<CatalogService>> type = new TypeToken<List<CatalogService>>() {
-        };
-        private final String service;
+    public class ServiceRequestBuilder extends DirectResultBuilder<ServiceRequestBuilder, List<CatalogService>> {
 
         private ServiceRequestBuilder(String service) {
-            super(ServiceRequestBuilder.class, CatalogRequestBuilder.this);
-            this.service = service;
+            super("/catalog/service/" + service, LIST_SERVICE_TOKEN, ServiceRequestBuilder.class,
+                    CatalogRequestBuilder.this);
 
         }
 
-        public ServiceRequestBuilder tag(String tag){
-            addParameter("tag",tag);
+        public ServiceRequestBuilder tag(String tag) {
+            addParameter("tag", tag);
             return this;
         }
-
-        public Optional<CatalogService> value() {
-            return response().getResult();
-        }
-
-        public JConsulResponse<CatalogService> response() {
-            JConsulResponse<List<CatalogService>> response = getJConsulResponse("GET", "/catalog/service/" + service,
-                    type);
-
-            return JConsulUtils.transform(response);
-
-        }
-
-        public void async(JConsulResponseCallback<CatalogService> callback) {
-            executeResult("GET", "/catalog/service/" + service, type, JConsulUtils.transform(callback));
-        }
     }
 
-    public class NodeListRequestBuilder extends ResultBuilder<NodeListRequestBuilder, List<Node>> {
-        @SuppressWarnings("serial")
+    public class NodeListRequestBuilder extends DirectResultBuilder<NodeListRequestBuilder, List<Node>> {
         private NodeListRequestBuilder() {
-            super(NodeListRequestBuilder.class, "/catalog/nodes", new TypeToken<List<Node>>() {
-            });
+            super("/catalog/nodes", LIST_NODE_TOKEN, NodeListRequestBuilder.class, CatalogRequestBuilder.this);
         }
     }
 
-    public class NodeRequestBuilder extends ResultBuilder<NodeRequestBuilder, CatalogNode> {
+    public class NodeRequestBuilder extends DirectResultBuilder<NodeRequestBuilder, CatalogNode> {
 
         private NodeRequestBuilder(String node) {
-            super(NodeRequestBuilder.class, "/catalog/node/" + node, TypeToken.of(CatalogNode.class));
+            super("/catalog/node/" + node, NODE_TOKEN, NodeRequestBuilder.class, CatalogRequestBuilder.this);
         }
     }
 
-    public class DeregisterRequestBuilder{
+    public class DeregisterRequestBuilder {
 
-        private final Map<String,String> data=Maps.newHashMap();
-
+        private final Map<String, String> data = Maps.newHashMap();
 
         public DeregisterRequestBuilder(String node) {
             data.put("Node", node);
         }
-        public DeregisterRequestBuilder datacenter(String dc){
+
+        public DeregisterRequestBuilder datacenter(String dc) {
             data.put("Datacenter", dc);
             return this;
         }
 
-        public DeregisterRequestBuilder service(String serviceID){
+        public DeregisterRequestBuilder service(String serviceID) {
             data.put("ServiceID", serviceID);
             return this;
         }
 
-        public DeregisterRequestBuilder check(String checkID){
+        public DeregisterRequestBuilder check(String checkID) {
             data.put("CheckID", checkID);
             return this;
         }
 
-
-        public void execute(){
+        public void execute() {
             setJsonBody(data);
             getPlainResult("PUT", "/catalog/deregister");
         }

@@ -12,12 +12,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.loukou.jconsul.client.JConsul;
 import com.loukou.jconsul.client.AgentRequestBuilder.RegisterStatus;
-import com.loukou.jconsul.client.model.agent.Check;
-import com.loukou.jconsul.client.model.agent.Member;
-import com.loukou.jconsul.client.model.health.HealthCheck;
-import com.loukou.jconsul.client.model.health.Service;
+import com.loukou.jconsul.client.model.HealthCheck;
+import com.loukou.jconsul.client.model.Member;
+import com.loukou.jconsul.client.model.Service;
 
 public class AgentRequestBuilderTest {
 
@@ -40,12 +38,7 @@ public class AgentRequestBuilderTest {
 
     @Test
     public void testChecks() {
-        Check check = new Check();
-        check.setId("test");
-        check.setName("test");
-        check.setNotes("aaa");
-        check.setTtl("10s");
-        RegisterStatus status=jconsul.agent().registerCheck(check);
+        RegisterStatus status=jconsul.agent().registerCheck("test").id("test").notes("aaa").ttl(10);
         Map<String, HealthCheck> map = jconsul.agent().checks();
         assertFalse(map.isEmpty());
         HealthCheck health = map.get("test");
@@ -75,12 +68,7 @@ public class AgentRequestBuilderTest {
     @Test
     public void testCheckActions() {
         String key = "test";
-        Check check = new Check();
-        check.setId(key);
-        check.setName("test");
-        check.setNotes("aaa");
-        check.setTtl("10s");
-        RegisterStatus status = jconsul.agent().registerCheck(check);
+        RegisterStatus status = jconsul.agent().registerCheck("test").id(key).notes("aaa").ttl(10);
         assertNotNull(status);
 
         String note = "zxvzdafsdfafa";
@@ -136,7 +124,7 @@ public class AgentRequestBuilderTest {
         String serviceId = "test";
         String checkId = "service:" + serviceId;
 
-        RegisterStatus status = jconsul.agent().registerTTLService(serviceId,serviceId,1234,10,"a","b");
+        RegisterStatus status = jconsul.agent().registerService(serviceId).port(1234).tags("a","b").ttl(10);
 
         Map<String, Service> map;
         Map<String, HealthCheck> checkMap;

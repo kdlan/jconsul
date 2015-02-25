@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import com.loukou.jconsul.client.model.agent.Agent;
-import com.loukou.jconsul.client.model.agent.Check;
-import com.loukou.jconsul.client.model.agent.Member;
-import com.loukou.jconsul.client.model.agent.ServiceRegistration;
-import com.loukou.jconsul.client.model.health.HealthCheck;
-import com.loukou.jconsul.client.model.health.Service;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
+import com.loukou.jconsul.client.model.Agent;
+import com.loukou.jconsul.client.model.HealthCheck;
+import com.loukou.jconsul.client.model.Member;
+import com.loukou.jconsul.client.model.Service;
 
 public class AgentRequestBuilder extends JConsulRequestBuilder {
 
@@ -65,115 +65,136 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
         serviceMaintenance(serviceId, enable);
     }
 
-    public RegisterStatus registerCheck(Check check) {
-        setJsonBody(check);
-        getPlainResult("PUT", "/agent/check/register");
-        String checkId = check.getId();
-        if (checkId == null || "".equals(checkId.trim())) {
-            checkId = check.getName();
-        }
-        return new CheckStatus(checkId);
+    public CheckRegisterBuilder registerCheck(String name) {
+        return new CheckRegisterBuilder(name);
     }
 
-    public RegisterStatus registerHTTPCheck(String checkId, String name, String httpUrl, int timeout, int interval) {
-        Check check = new Check();
-        check.setId(checkId);
-        check.setName(name);
-        check.setHttp(httpUrl);
-        check.setTimeout(timeout + "s");
-        check.setInterval(interval + "s");
-        return registerCheck(check);
-    }
-
-    public RegisterStatus registerHTTPCheck(String checkId, String name, String httpUrl, int interval) {
-        Check check = new Check();
-        check.setId(checkId);
-        check.setName(name);
-        check.setHttp(httpUrl);
-        check.setInterval(interval + "s");
-        return registerCheck(check);
-    }
-
-    public RegisterStatus registerScriptCheck(String checkId, String name, String script, int interval) {
-        Check check = new Check();
-        check.setId(checkId);
-        check.setName(name);
-        check.setScript(script);
-        check.setInterval(interval + "s");
-        return registerCheck(check);
-    }
-
-    public RegisterStatus registerTTLCheck(String checkId, String name, int ttl) {
-        Check check = new Check();
-        check.setId(name);
-        check.setName(name);
-        check.setTtl(ttl + "s");
-        return registerCheck(check);
-    }
-
-    public RegisterStatus wrapCheck(String checkId) {
-        return new CheckStatus(checkId);
-    }
-
-    public RegisterStatus registerService(ServiceRegistration service) {
-        setJsonBody(service);
-        getPlainResult("PUT", "/agent/service/register");
-        String id = service.getId();
-        if (id == null || "".equals(id.trim())) {
-            id = service.getName();
-        }
-        return new ServiceStatus(id);
-    }
-
-    private RegisterStatus registerService(String id, String name, int port, ServiceRegistration.Check check,
-            String... tags) {
-        ServiceRegistration service = new ServiceRegistration();
-        service.setId(id);
-        service.setName(name);
-        service.setPort(port);
-        if (tags != null) {
-            service.setTags(Arrays.asList(tags));
-        }
-        service.setCheck(check);
-
-        return registerService(service);
-    }
-
-    public RegisterStatus registerTTLService(String id, String name, int port, int ttl, String... tags) {
-
-        ServiceRegistration.Check check = new ServiceRegistration.Check();
-        check.setTtl(ttl + "s");
-
-        return registerService(id, name, port, check, tags);
-    }
-
-    public RegisterStatus registerScriptService(String id, String name, int port, String script, int interval,
-            String... tags) {
-        ServiceRegistration.Check check = new ServiceRegistration.Check();
-        check.setScript(script);
-        check.setInterval(interval + "s");
-        return registerService(id, name, port, check, tags);
-    }
-
-    public RegisterStatus registerHTTPService(String id, String name, int port, String httpUrl, int timeout,
-            int interval, String... tags) {
-        ServiceRegistration.Check check = new ServiceRegistration.Check();
-        check.setHttp(httpUrl);
-        check.setTimeout(timeout + "s");
-        check.setInterval(interval + "s");
-        return registerService(id, name, port, check, tags);
-    }
-
-    public RegisterStatus registerHTTPService(String id, String name, int port, String httpUrl, int interval,
-            String... tags) {
-        ServiceRegistration.Check check = new ServiceRegistration.Check();
-        check.setHttp(httpUrl);
-        check.setInterval(interval + "s");
-        return registerService(id, name, port, check, tags);
+    public ServiceRegisterBuilder registerService(String name) {
+        return new ServiceRegisterBuilder(name);
     }
 
     public RegisterStatus wrapService(String serviceId) {
         return new ServiceStatus(serviceId);
+    }
+
+    public class CheckRegisterBuilder {
+        private final Map<String, String> map = Maps.newHashMap();
+
+        private CheckRegisterBuilder(String name) {
+            map.put("Name", name);
+        }
+
+        public CheckRegisterBuilder id(String id) {
+            map.put("ID", id);
+            return this;
+        }
+
+        public CheckRegisterBuilder notes(String notes) {
+            map.put("Notes", notes);
+            return this;
+        }
+
+        public CheckRegisterBuilder service(String serviceId) {
+            map.put("ServiceID", serviceId);
+            return this;
+        }
+
+        private RegisterStatus execute() {
+            setJsonBody(map);
+            getPlainResult("PUT", "/agent/check/register");
+            String checkId = map.get("ID");
+            if (checkId == null || "".equals(checkId.trim())) {
+                checkId = map.get("Name");
+            }
+            return new CheckStatus(checkId);
+        }
+
+        public RegisterStatus ttl(int ttl) {
+            map.put("TTL", ttl + "s");
+            return execute();
+        }
+
+        public RegisterStatus script(String script, int interval) {
+            map.put("Script", script);
+            map.put("Interval", interval + "s");
+            return execute();
+        }
+
+        public RegisterStatus http(String url, int interval) {
+            map.put("HTTP", url);
+            map.put("Interval", interval + "s");
+            return execute();
+        }
+
+        public RegisterStatus http(String url, int timeout, int interval) {
+            map.put("Timeout", timeout + "s");
+            return http(url, interval);
+        }
+
+    }
+
+    public class ServiceRegisterBuilder {
+        private final Map<String, Object> map = Maps.newHashMap();
+
+        private ServiceRegisterBuilder(String name) {
+            map.put("Name", name);
+        }
+
+        public ServiceRegisterBuilder id(String id) {
+            map.put("ID", id);
+            return this;
+        }
+
+        public ServiceRegisterBuilder tags(String... tags) {
+            map.put("Tags", Arrays.asList(tags));
+            return this;
+        }
+
+        public ServiceRegisterBuilder port(int port) {
+            map.put("Port", port);
+            return this;
+        }
+
+        public ServiceRegisterBuilder address(String address) {
+            map.put("Address", address);
+            return this;
+        }
+
+        public RegisterStatus ttl(int ttl) {
+            map.put("Check", ImmutableMap.of("TTL", ttl + "s"));
+            return new ServiceStatus(getId());
+        }
+
+        public RegisterStatus script(String script, int interval) {
+
+            map.put("Check", ImmutableMap.of("Script", script, "Interval", interval + "s"));
+            return new ServiceStatus(getId());
+        }
+
+        public RegisterStatus http(String url, int interval) {
+            map.put("Check", ImmutableMap.of("HTTP", url, "Interval", interval + "s"));
+            return new ServiceStatus(getId());
+        }
+
+        public RegisterStatus http(String url, int timeout, int interval) {
+            map.put("Check", ImmutableMap.of("HTTP", url, "Timeout", timeout + "s", "Interval", interval + "s"));
+            return new ServiceStatus(getId());
+        }
+
+        public RegisterStatus execute() {
+            setJsonBody(map);
+            getPlainResult("PUT", "/agent/service/register");
+            return new ServiceWithoutCheckStatus(getId());
+        }
+
+        private String getId() {
+            String id = (String) map.get("ID");
+            if (id == null || "".equals(id.trim())) {
+                id = (String) map.get("Name");
+            }
+            return id;
+        }
+
     }
 
     public interface RegisterStatus {
@@ -243,6 +264,45 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
         public ServiceStatus(String serviceId) {
             super("service:" + serviceId);
             this.serviceId = serviceId;
+        }
+
+        @Override
+        public void deregister() {
+            getPlainResult("GET", "/agent/service/deregister/" + serviceId);
+        }
+
+    }
+
+    private class ServiceWithoutCheckStatus implements RegisterStatus {
+
+        private final String serviceId;
+
+        private ServiceWithoutCheckStatus(String serviceId) {
+            this.serviceId = serviceId;
+        }
+
+        @Override
+        public void pass() {
+        }
+
+        @Override
+        public void pass(String note) {
+        }
+
+        @Override
+        public void warn() {
+        }
+
+        @Override
+        public void warn(String note) {
+        }
+
+        @Override
+        public void fail() {
+        }
+
+        @Override
+        public void fail(String note) {
         }
 
         @Override
