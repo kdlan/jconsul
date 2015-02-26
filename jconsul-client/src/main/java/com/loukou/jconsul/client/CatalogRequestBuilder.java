@@ -52,8 +52,8 @@ public class CatalogRequestBuilder extends JConsulRequestBuilder {
         return new ServiceListRequestBuilder();
     }
 
-    public ServiceRequestBuilder service(String service) {
-        return new ServiceRequestBuilder(service);
+    public ServiceRequestBuilder service(String serviceName) {
+        return new ServiceRequestBuilder(serviceName);
     }
 
     public NodeRequestBuilder node(String node) {
@@ -71,8 +71,8 @@ public class CatalogRequestBuilder extends JConsulRequestBuilder {
 
     public class ServiceRequestBuilder extends DirectResultBuilder<ServiceRequestBuilder, List<CatalogService>> {
 
-        private ServiceRequestBuilder(String service) {
-            super("/catalog/service/" + service, LIST_SERVICE_TOKEN, ServiceRequestBuilder.class,
+        private ServiceRequestBuilder(String serviceName) {
+            super("/catalog/service/" + serviceName, LIST_SERVICE_TOKEN, ServiceRequestBuilder.class,
                     CatalogRequestBuilder.this);
 
         }

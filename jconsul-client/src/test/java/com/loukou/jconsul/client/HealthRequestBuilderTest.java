@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.loukou.jconsul.client.AgentRequestBuilder.RegisterStatus;
 import com.loukou.jconsul.client.model.HealthCheck;
+import com.loukou.jconsul.client.model.HealthService;
 
 public class HealthRequestBuilderTest {
 
@@ -32,7 +33,8 @@ public class HealthRequestBuilderTest {
 
     @Test
     public void testNode() {
-        RegisterStatus check1 = jconsul.agent().registerCheck("healthUnitTestCheck1").id("healthUnitTestCheck1").ttl(10);
+        RegisterStatus check1 = jconsul.agent().registerCheck("healthUnitTestCheck1").id("healthUnitTestCheck1")
+                .ttl(10);
         RegisterStatus check2 = jconsul.agent().registerCheck("healthUnitTestCheck2").ttl(10);
 
         check1.pass("hello");
@@ -64,26 +66,54 @@ public class HealthRequestBuilderTest {
 
     @Test
     public void testChecks() {
-        RegisterStatus service = jconsul.agent().registerService("healthUnitTestChecks").id("healthUnitTestChecks:9999").port(9999).execute();
+        RegisterStatus service = jconsul.agent().registerService("healthUnitTestChecks")
+                .id("healthUnitTestChecks:9999").port(9999).execute();
 
-        RegisterStatus check1 = jconsul.agent().registerCheck("check1").id("service:healthUnitTestChecks:9999:1").service("healthUnitTestChecks:9999").ttl(10);
-        RegisterStatus check2 = jconsul.agent().registerCheck("check2").id("service:healthUnitTestChecks:9999:2").service("healthUnitTestChecks:9999").ttl(10);
+        RegisterStatus check1 = jconsul.agent().registerCheck("check1").id("service:healthUnitTestChecks:9999:1")
+                .service("healthUnitTestChecks:9999").ttl(10);
+        RegisterStatus check2 = jconsul.agent().registerCheck("check2").id("service:healthUnitTestChecks:9999:2")
+                .service("healthUnitTestChecks:9999").ttl(10);
 
+        check1.pass("hello");
+        check2.warn("world");
 
-//        check1.deregister();
-//        check2.deregister();
-//
-//        service.deregister();
+        List<HealthCheck> list = jconsul.health().checks("healthUnitTestChecks").value().get();
+        assertFalse(list.isEmpty());
+        boolean check1Asserted = false;
+        boolean check2Asserted = false;
+        for (HealthCheck check : list) {
+            if ("service:healthUnitTestChecks:9999:1".equals(check.getCheckId())) {
+                check1Asserted = true;
+                assertEquals("hello", check.getOutput());
+                assertEquals("passing", check.getStatus());
+            } else if ("service:healthUnitTestChecks:9999:2".equals(check.getCheckId())) {
+                check2Asserted = true;
+                assertEquals("world", check.getOutput());
+                assertEquals("warning", check.getStatus());
+            }
+        }
+        assertTrue(check1Asserted);
+        assertTrue(check2Asserted);
+
+        check1.deregister();
+        check2.deregister();
+
+        service.deregister();
     }
 
     @Test
     public void testService() {
-        fail("Not yet implemented");
-    }
+        RegisterStatus service = jconsul.agent().registerService("healthUnitTestChecks")
+                .id("healthUnitTestChecks:9999").port(9999).execute();
+        List<HealthService> list = jconsul.health().service("healthUnitTestChecks").value().get();
+        assertFalse(list.isEmpty());
+        for(HealthService hs:list){
+            assertEquals("healthUnitTestChecks",hs.getService().getService());
+            assertFalse(hs.getChecks().isEmpty());
+        }
 
-    @Test
-    public void testState() {
-        fail("Not yet implemented");
+
+        service.deregister();
     }
 
 }

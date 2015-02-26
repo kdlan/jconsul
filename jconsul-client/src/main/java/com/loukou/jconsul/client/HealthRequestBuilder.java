@@ -24,12 +24,12 @@ public class HealthRequestBuilder extends JConsulRequestBuilder {
         return new NodeRequestBuilder(node);
     }
 
-    public CheckRequestBuilder checks(String serviceId) {
-        return new CheckRequestBuilder(serviceId);
+    public CheckRequestBuilder checks(String serviceName) {
+        return new CheckRequestBuilder(serviceName);
     }
 
-    public ServiceRequestBuilder service(String serviceId) {
-        return new ServiceRequestBuilder(serviceId);
+    public ServiceRequestBuilder service(String serviceName) {
+        return new ServiceRequestBuilder(serviceName);
     }
 
     public StateRequestBuilder state(String state){
@@ -45,14 +45,14 @@ public class HealthRequestBuilder extends JConsulRequestBuilder {
     }
 
     public class CheckRequestBuilder extends DirectResultBuilder<CheckRequestBuilder, List<HealthCheck>> {
-        private CheckRequestBuilder(String serviceId) {
-            super("/health/checks/" + serviceId, LIST_CHECK_TOKEN, CheckRequestBuilder.class, HealthRequestBuilder.this);
+        private CheckRequestBuilder(String serviceName) {
+            super("/health/checks/" + serviceName, LIST_CHECK_TOKEN, CheckRequestBuilder.class, HealthRequestBuilder.this);
         }
     }
 
     public class ServiceRequestBuilder extends DirectResultBuilder<ServiceRequestBuilder, List<HealthService>> {
-        private ServiceRequestBuilder(String serviceId) {
-            super("/health/service/" + serviceId, LIST_SERVICE_TOKEN, ServiceRequestBuilder.class,
+        private ServiceRequestBuilder(String serviceName) {
+            super("/health/service/" + serviceName, LIST_SERVICE_TOKEN, ServiceRequestBuilder.class,
                     HealthRequestBuilder.this);
         }
 

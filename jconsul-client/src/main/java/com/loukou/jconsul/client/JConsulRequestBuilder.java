@@ -5,8 +5,8 @@ import com.google.common.reflect.TypeToken;
 
 class JConsulRequestBuilder {
 
-    private RequestProcessor processor;
-    private final RequestMeta meta;
+    private final RequestProcessor processor;
+    private RequestMeta meta;
 
     JConsulRequestBuilder(RequestProcessor processor) {
         this.processor = processor;
@@ -18,6 +18,10 @@ class JConsulRequestBuilder {
         this.processor = builder.processor;
         this.meta = builder.meta;
 
+    }
+
+    RequestProcessor getProcessor() {
+        return processor;
     }
 
     final void addParameter(String key) {
@@ -62,12 +66,15 @@ class JConsulRequestBuilder {
     }
 
     protected final void executeRaw(String method, String path, JConsulResponseCallback<String> callback) {
-        processor.asyncGetRawResponse(method, path,  meta,callback);
+        processor.asyncGetRawResponse(method, path, meta, callback);
     }
 
     protected final <T> void executeResult(String method, String path, TypeToken<T> type,
             JConsulResponseCallback<T> callback) {
-        processor.asyncGetResponse(method, path, meta,  type,callback);
+        processor.asyncGetResponse(method, path, meta, type, callback);
     }
 
+    protected void reset(){
+        meta=new RequestMeta();
+    }
 }

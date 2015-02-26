@@ -74,7 +74,7 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
     }
 
     public RegisterStatus wrapService(String serviceId) {
-        return new ServiceStatus(serviceId);
+        return new ServiceStatus(serviceId, AgentRequestBuilder.this);
     }
 
     public class CheckRegisterBuilder {
@@ -106,7 +106,7 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
             if (checkId == null || "".equals(checkId.trim())) {
                 checkId = map.get("Name");
             }
-            return new CheckStatus(checkId);
+            return new CheckStatus(checkId, AgentRequestBuilder.this);
         }
 
         public RegisterStatus ttl(int ttl) {
@@ -162,29 +162,34 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
 
         public RegisterStatus ttl(int ttl) {
             map.put("Check", ImmutableMap.of("TTL", ttl + "s"));
-            return new ServiceStatus(getId());
+            return executeWithCheck();
         }
 
         public RegisterStatus script(String script, int interval) {
 
             map.put("Check", ImmutableMap.of("Script", script, "Interval", interval + "s"));
-            return new ServiceStatus(getId());
+            return executeWithCheck();
         }
 
         public RegisterStatus http(String url, int interval) {
             map.put("Check", ImmutableMap.of("HTTP", url, "Interval", interval + "s"));
-            return new ServiceStatus(getId());
+            return executeWithCheck();
         }
 
         public RegisterStatus http(String url, int timeout, int interval) {
             map.put("Check", ImmutableMap.of("HTTP", url, "Timeout", timeout + "s", "Interval", interval + "s"));
-            return new ServiceStatus(getId());
+            return executeWithCheck();
         }
 
+        private RegisterStatus executeWithCheck(){
+            setJsonBody(map);
+            getPlainResult("PUT", "/agent/service/register");
+            return new ServiceStatus(getId(), AgentRequestBuilder.this);
+        }
         public RegisterStatus execute() {
             setJsonBody(map);
             getPlainResult("PUT", "/agent/service/register");
-            return new ServiceWithoutCheckStatus(getId());
+            return new ServiceWithoutCheckStatus(getId(), AgentRequestBuilder.this);
         }
 
         private String getId() {
@@ -213,22 +218,26 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
         public void fail(String note);
     }
 
-    public class CheckStatus implements RegisterStatus {
+    public static class CheckStatus implements RegisterStatus {
         private final String checkId;
+        protected final JConsulRequestBuilder builder;
 
-        protected CheckStatus(String checkId) {
+        protected CheckStatus(String checkId, JConsulRequestBuilder builder) {
             this.checkId = checkId;
+            this.builder = new JConsulRequestBuilder(builder.getProcessor());
         }
 
         public void deregister() {
-            getPlainResult("GET", "/agent/check/deregister/" + checkId);
+            builder.getPlainResult("GET", "/agent/check/deregister/" + checkId);
+            builder.reset();
         }
 
         private void status(String status, String note) {
             if (note != null) {
-                addParameter("note", note);
+                builder.addParameter("note", note);
             }
-            getPlainResult("GET", "/agent/check/" + status + "/" + checkId);
+            builder.getPlainResult("GET", "/agent/check/" + status + "/" + checkId);
+            builder.reset();
         }
 
         public void pass() {
@@ -257,28 +266,31 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
 
     }
 
-    private class ServiceStatus extends CheckStatus {
+    private static class ServiceStatus extends CheckStatus {
 
         private final String serviceId;
 
-        public ServiceStatus(String serviceId) {
-            super("service:" + serviceId);
+        public ServiceStatus(String serviceId, JConsulRequestBuilder builder) {
+            super("service:" + serviceId, builder);
             this.serviceId = serviceId;
         }
 
         @Override
         public void deregister() {
-            getPlainResult("GET", "/agent/service/deregister/" + serviceId);
+            builder.getPlainResult("GET", "/agent/service/deregister/" + serviceId);
+            builder.reset();
         }
 
     }
 
-    private class ServiceWithoutCheckStatus implements RegisterStatus {
+    private static class ServiceWithoutCheckStatus implements RegisterStatus {
 
         private final String serviceId;
+        private final JConsulRequestBuilder builder;
 
-        private ServiceWithoutCheckStatus(String serviceId) {
+        private ServiceWithoutCheckStatus(String serviceId, JConsulRequestBuilder builder) {
             this.serviceId = serviceId;
+            this.builder = new JConsulRequestBuilder(builder.getProcessor());
         }
 
         @Override
@@ -307,7 +319,7 @@ public class AgentRequestBuilder extends JConsulRequestBuilder {
 
         @Override
         public void deregister() {
-            getPlainResult("GET", "/agent/service/deregister/" + serviceId);
+            builder.getPlainResult("GET", "/agent/service/deregister/" + serviceId);
         }
 
     }

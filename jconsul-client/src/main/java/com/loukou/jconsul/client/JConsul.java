@@ -42,6 +42,10 @@ public class JConsul {
         return new HealthRequestBuilder(processor);
     }
 
+    public SessionRequestBuilder session(){
+        return new SessionRequestBuilder(processor);
+    }
+
     public void close() {
         processor.close();
     }
