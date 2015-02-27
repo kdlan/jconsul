@@ -1,5 +1,6 @@
 package com.loukou.jconsul.client;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,11 @@ public class SessionRequestBuilder extends JConsulRequestBuilder {
 
         public SessionCreateBuilder node(String node) {
             map.put("Node", node);
+            return this;
+        }
+
+        public SessionCreateBuilder checks(String... checks){
+            map.put("Checks", Arrays.asList(checks));
             return this;
         }
 
