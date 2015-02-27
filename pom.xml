@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.loukou.jconsul</groupId>
   <artifactId>jconsul-root</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>jconsul</name>
@@ -21,7 +21,7 @@
     <slf4j.version>1.7.5</slf4j.version>
     <guava.version>18.0</guava.version>
     <gson.version>2.3.1</gson.version>
-    <async-http-client.version>1.9.6</async-http-client.version>
+    <async-http-client.version>1.9.10</async-http-client.version>
     <netty3.version>3.10.0.Final</netty3.version>
     <junit.version>4.12</junit.version>
 
