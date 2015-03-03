@@ -33,7 +33,8 @@ public class JConsulPropertyPlaceholderConfigurer extends PropertyPlaceholderCon
             setLocations((Resource[]) null);
         } catch (UncheckedExecutionException e) {
             if (e.getCause() instanceof ConnectException) {
-                LOG.warn(e.getMessage());
+                LOG.debug(e.getMessage(),e);
+                LOG.warn("No consul found, fallback to file properties");
                 fallbackToFile = true;
             } else {
                 throw e;
