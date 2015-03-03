@@ -6,8 +6,7 @@
     <artifactId>jconsul-root</artifactId>
     <version>0.2.0-SNAPSHOT</version>
   </parent>
-  <artifactId>jconsul-client</artifactId>
-
+  <artifactId>jconsul-spring</artifactId>
 
   <dependencies>
     <dependency>
@@ -25,16 +24,21 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.ning</groupId>
-      <artifactId>async-http-client</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>jconsul-client</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>3.2.13.RELEASE</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>3.2.13.RELEASE</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

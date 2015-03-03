@@ -12,6 +12,7 @@
 
   <modules>
     <module>jconsul-client</module>
+    <module>jconsul-spring</module>
   </modules>
 
   <properties>
