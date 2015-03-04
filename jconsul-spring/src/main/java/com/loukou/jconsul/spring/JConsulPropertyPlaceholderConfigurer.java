@@ -6,7 +6,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 
@@ -18,10 +17,27 @@ public class JConsulPropertyPlaceholderConfigurer extends PropertyPlaceholderCon
 
     private Logger LOG = LoggerFactory.getLogger(JConsulPropertyPlaceholderConfigurer.class);
 
-    @Autowired(required = false)
     private JConsul jconsul;
 
+    private boolean fallbackToFileWhenNotExists = false;
+
     private boolean fallbackToFile = false;
+
+    public JConsul getJconsul() {
+        return jconsul;
+    }
+
+    public void setJconsul(JConsul jconsul) {
+        this.jconsul = jconsul;
+    }
+
+    public boolean isFallbackToFileWhenNotExists() {
+        return fallbackToFileWhenNotExists;
+    }
+
+    public void setFallbackToFileWhenNotExists(boolean fallbackToFileWhenNotExists) {
+        this.fallbackToFileWhenNotExists = fallbackToFileWhenNotExists;
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -30,10 +46,12 @@ public class JConsulPropertyPlaceholderConfigurer extends PropertyPlaceholderCon
         }
         try {
             jconsul.agent().self();
-            setLocations((Resource[]) null);
+            if (!fallbackToFileWhenNotExists) {
+                setLocations((Resource[]) null);
+            }
         } catch (UncheckedExecutionException e) {
             if (e.getCause() instanceof ConnectException) {
-                LOG.debug(e.getMessage(),e);
+                LOG.debug(e.getMessage(), e);
                 LOG.warn("No consul found, fallback to file properties");
                 fallbackToFile = true;
             } else {
@@ -49,7 +67,10 @@ public class JConsulPropertyPlaceholderConfigurer extends PropertyPlaceholderCon
 
         if (!fallbackToFile) {
             Optional<String> value = jconsul.keyValue().get(placeholder).raw().value();
-            return value.orNull();
+
+            if (value.isPresent()) {
+                return value.get();
+            }
         }
         return super.resolvePlaceholder(placeholder, props);
     }
