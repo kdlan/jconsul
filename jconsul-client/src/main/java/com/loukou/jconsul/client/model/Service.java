@@ -1,5 +1,7 @@
 package com.loukou.jconsul.client.model;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 
@@ -12,7 +14,7 @@ public class Service {
     private String service;
 
     @SerializedName("Tags")
-    private String[] tags;
+    private List<String> tags;
 
     @SerializedName("Port")
     private int port;
@@ -33,11 +35,11 @@ public class Service {
         this.service = service;
     }
 
-    public String[] getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTags(String[] tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
     }
 
