@@ -12,6 +12,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.loukou.jconsul.client.AgentRequestBuilder.RegisterStatus;
 import com.loukou.jconsul.client.AgentRequestBuilder.ServiceRegisterBuilder;
 import com.loukou.jconsul.client.JConsul;
@@ -102,7 +103,8 @@ public class ServiceRegisterLifecycle implements SmartLifecycle, InitializingBea
             LOG.warn("Port not set, use 8080 as default");
         }
 
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat(
+                "jconsul-spring-lifecycle-thread-%d").build());
 
         serviceId = serviceName + ":" + servicePort;
         LOG.info("Register service {} with id {} to consul, check ttl {}", serviceName, serviceId, serviceCheckTtl);
@@ -111,7 +113,6 @@ public class ServiceRegisterLifecycle implements SmartLifecycle, InitializingBea
             builder.tags(serviceTags);
         }
         serviceRegisterStatus = builder.ttl(serviceCheckTtl);
-        serviceRegisterStatus.fail("init state");
     }
 
     @Override
@@ -145,7 +146,11 @@ public class ServiceRegisterLifecycle implements SmartLifecycle, InitializingBea
         passTask = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                serviceRegisterStatus.pass();
+                try {
+                    serviceRegisterStatus.pass();
+                } catch (Exception e) {
+                    LOG.warn("consul serivce pass error, msg: {}", e.getMessage());
+                }
             }
         }, serviceCheckPassPeriod, serviceCheckPassPeriod, TimeUnit.SECONDS);
         running = true;
@@ -158,7 +163,11 @@ public class ServiceRegisterLifecycle implements SmartLifecycle, InitializingBea
             passTask.cancel(false);
             passTask = null;
         }
-        serviceRegisterStatus.fail("service stopped");
+        try {
+            serviceRegisterStatus.fail("service stopped");
+        } catch (Exception e) {
+            LOG.warn("consul serivce fail error, msg: {}", e.getMessage());
+        }
         LOG.info("Service {} with id {} stopped", serviceName, serviceId);
 
     }
