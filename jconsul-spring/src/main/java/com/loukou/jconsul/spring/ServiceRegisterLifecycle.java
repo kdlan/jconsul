@@ -108,7 +108,7 @@ public class ServiceRegisterLifecycle implements SmartLifecycle, InitializingBea
 
         serviceId = serviceName + ":" + servicePort;
         LOG.info("Register service {} with id {} to consul, check ttl {}", serviceName, serviceId, serviceCheckTtl);
-        ServiceRegisterBuilder builder = jconsul.agent().registerService(serviceName).id(serviceId);
+        ServiceRegisterBuilder builder = jconsul.agent().registerService(serviceName).id(serviceId).port(servicePort);
         if (serviceTags != null) {
             builder.tags(serviceTags);
         }
