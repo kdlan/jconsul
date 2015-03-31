@@ -141,7 +141,6 @@ public class ServiceRegisterLifecycle implements SmartLifecycle, InitializingBea
 
     @Override
     public void start() {
-        serviceRegisterStatus.pass();
         LOG.info("Service {} with id {} started", serviceName, serviceId);
         passTask = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
@@ -152,7 +151,7 @@ public class ServiceRegisterLifecycle implements SmartLifecycle, InitializingBea
                     LOG.warn("consul serivce pass error, msg: {}", e.getMessage());
                 }
             }
-        }, serviceCheckPassPeriod, serviceCheckPassPeriod, TimeUnit.SECONDS);
+        }, 0, serviceCheckPassPeriod, TimeUnit.SECONDS);
         running = true;
     }
 

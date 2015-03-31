@@ -31,6 +31,10 @@ public class JConsulPropertyPlaceholderConfigurer extends PropertyPlaceholderCon
         this.jconsul = jconsul;
     }
 
+    /**
+     * whether fallback to properties locations when placeholder not found in consul
+     * @return
+     */
     public boolean isFallbackToFileWhenNotExists() {
         return fallbackToFileWhenNotExists;
     }

@@ -3,22 +3,21 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
   xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:jconsul="http://www.loukou.com/schema/jconsul"
   xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.loukou.com/schema/jconsul http://www.loukou.com/schema/jconsul/jconsul.xsd
         ">
 
 
-  <context:annotation-config>
+  <context:annotation-config/>
+  <jconsul:configuration />
+  <jconsul:property-placeholder
+    fallbackToFileWhenNotExists="false" location="test.properties" />
 
-  </context:annotation-config>
-
-  <bean class="com.loukou.jconsul.spring.JConsulPropertyPlaceholderConfigurer">
-    <property name="location" value="classpath:test.properties"></property>
-    <property name="ignoreUnresolvablePlaceholders" value="true"></property>
-  </bean>
   <bean class="com.loukou.jconsul.spring.PlaceholderTestBean">
     <property name="desc"
       value="${__unittest/com.loukou.jconsul.spring.PlaceholderTestBean/desc}" />

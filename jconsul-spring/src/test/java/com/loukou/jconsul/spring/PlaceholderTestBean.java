@@ -9,6 +9,13 @@ public class PlaceholderTestBean {
 
     private String desc;
 
+    private String kv;
+
+    @Value("#{jconsulConfig.serviceAddrs('config_unittest')}")
+    private String address;
+
+    private String randomAddress;
+
     public String getValue() {
         return value;
     }
@@ -24,5 +31,31 @@ public class PlaceholderTestBean {
     public void setDesc(String desc) {
         this.desc = desc;
     }
+
+    public String getKv() {
+        return kv;
+    }
+
+    public void setKv(String kv) {
+        this.kv = kv;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getRandomAddress() {
+        return randomAddress;
+    }
+
+    public void setRandomAddress(String randomAddress) {
+        this.randomAddress = randomAddress;
+    }
+
+
 
 }

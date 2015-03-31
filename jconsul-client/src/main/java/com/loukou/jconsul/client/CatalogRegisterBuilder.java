@@ -55,6 +55,11 @@ public class CatalogRegisterBuilder {
             service.put("Service", name);
         }
 
+        public ServiceBuilder address(String address) {
+            service.put("Address", address);
+            return this;
+        }
+
         public ServiceBuilder port(int port) {
             service.put("Port", port);
             return this;

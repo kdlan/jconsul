@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-
 public class Service {
 
     @SerializedName("ID")
@@ -15,6 +14,9 @@ public class Service {
 
     @SerializedName("Tags")
     private List<String> tags;
+
+    @SerializedName("Address")
+    private String address;
 
     @SerializedName("Port")
     private int port;
@@ -41,6 +43,14 @@ public class Service {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getPort() {

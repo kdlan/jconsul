@@ -6,6 +6,7 @@ import java.net.ConnectException;
 
 import javax.annotation.Resource;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,11 @@ public class JConsulPropertyPlaceholderConfigurerTest {
             desc = "test_desc_xxx";
             jconsul.keyValue().put("__unittest/com.loukou.jconsul.spring.PlaceholderTestBean/desc")
                     .value("test_desc_xxx");
+
+
+            jconsul.catalog().register("test1", "1.1.1.1").service("config_unittest", "config_unittest").address("3.3.3.3").port(8080).execute();
+            jconsul.catalog().register("test2", "2.2.2.2").service("config_unittest", "config_unittest").address("4.4.4.4").port(8080).execute();
+            jconsul.close();
         } catch (UncheckedExecutionException e) {
             if (e.getCause() instanceof ConnectException) {
                 // ignore
@@ -40,6 +46,13 @@ public class JConsulPropertyPlaceholderConfigurerTest {
                 throw e;
             }
         }
+    }
+    @AfterClass
+    public static void afterClass(){
+        JConsul jconsul = new JConsul();
+        jconsul.catalog().deregister("test1").execute();
+        jconsul.catalog().deregister("test2").execute();
+        jconsul.close();
     }
 
     @Resource
@@ -49,6 +62,7 @@ public class JConsulPropertyPlaceholderConfigurerTest {
     public void test() {
         assertEquals(value, testBean.getValue());
         assertEquals(desc, testBean.getDesc());
+        assertEquals("3.3.3.3:8080,4.4.4.4:8080",testBean.getAddress());
     }
 
 }
