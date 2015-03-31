@@ -12,7 +12,7 @@ JConsul support consul 0.5.x now.
 JConsul need jdk 1.7+ to build
 
 ```
-git checkout v0.1.0
+git checkout v0.3.0
 mvn clean install -Dmaven.test.skip=true
 ```
 
@@ -22,7 +22,12 @@ Maven:
     <dependency>
         <groupId>com.loukou.jconsul</groupId>
         <artifactId>jconsul-client</artifactId>
-        <version>0.1.0</version>
+        <version>0.3.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.loukou.jconsul</groupId>
+        <artifactId>jconsul-spring</artifactId>
+        <version>0.3.0</version>
     </dependency>
 </dependencies>
 ```
@@ -126,6 +131,7 @@ List<HealthCheck> list=jconsul.health().status("passing").value().get();
 ```
 
 Session:
+
 ```
 Optional<Session> sessionOpional = jconsul.session().info(sessionId).value();
 
@@ -147,3 +153,103 @@ Status
 String leader=jconsul.status().leader();
 List<String> peers=jconsul.status().peers();
 ```
+
+
+### JConsul Spring
+
+ServiceRegisterLifecycle
+
+ServiceRegisterLifecycle will register your application to consul via http agent api and deregister it when shutdown
+
+
+```xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:jconsul="http://www.loukou.com/schema/jconsul"
+  xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.loukou.com/schema/jconsul http://www.loukou.com/schema/jconsul/jconsul.xsd
+        ">
+        
+<!-- either of the following ways is ok -->
+
+<jconsul:registration name="jconsul-spring-lifecycle-unittest" tag="tag1,tag2" />
+
+<bean class="com.loukou.jconsul.spring.ServiceRegisterLifecycle">
+    <property name="serviceName" value="jconsul-spring-lifecycle-unittest" />
+    <property name="serviceTags">
+      <array>
+        <value>tag1</value>
+        <value>tag2</value>
+      </array>
+    </property>
+    <property name="servicePort" value="8080"/>
+    <property name="serviceCheckTtl" value="10"/>
+    <property name="serviceCheckPassPeriod" value="3"/>
+</bean>       
+
+```
+
+
+
+JConsulPropertyPlaceholderConfigurer
+
+JConsulPropertyPlaceholderConfigurer extends `org.springframework.beans.factory.config.PropertyPlaceholderConfigurer`, you can use it like `PropertyPlaceholderConfigurer` in your Spring based project.
+
+JConsulPropertyPlaceholderConfigurer will resolve the placeholder from consul key values. When your project is not running in a consul environment, set `fallbackToFileWhenNotExists` true to fallback to the `locations` properties files. All the other properties are extends from `PropertyPlaceholderConfigurer`
+
+```xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:jconsul="http://www.loukou.com/schema/jconsul"
+  xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.loukou.com/schema/jconsul http://www.loukou.com/schema/jconsul/jconsul.xsd
+        ">
+
+<!-- either of the following ways is ok -->
+<jconsul:property-placeholder
+    fallbackToFileWhenNotExists="true" location="classpath:test.properties" />
+    
+    
+<bean id="servicePlaceholderConfig"
+    class="com.loukou.jconsul.spring.JConsulPropertyPlaceholderConfigurer">
+    <property name="location" value="classpath:test.properties" />
+    <property name="fallbackToFileWhenNotExists" value="true" />
+</bean>
+```
+
+
+JConsulConfiguration
+
+This class is a helper for Spring EL use to access consul service addresses. Futher, this will help to implement auto reloadable beans suppport.
+
+
+```xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:jconsul="http://www.loukou.com/schema/jconsul"
+  xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.loukou.com/schema/jconsul http://www.loukou.com/schema/jconsul/jconsul.xsd
+        ">
+
+<jconsul:configuration />
+<jconsul:property-placeholder
+    fallbackToFileWhenNotExists="true" location="classpath:test.properties" />
+
+<bean class="com.loukou.jconsul.spring.PlaceholderTestBean">
+    <property name="desc"
+      value="${__unittest/com.loukou.jconsul.spring.PlaceholderTestBean/desc}" />
+    <property name="kv"
+      value="#{jconsulConfig.config('__unittest/com.loukou.jconsul.spring.PlaceholderTestBean/desc')}"></property>
+      <property name="randomAddress" value="#{jconsulConfig.randomAddress('config_unittest')}"></property>
+</bean>
+```
+
