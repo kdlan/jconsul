@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.loukou.jconsul.client.JConsul;
 
@@ -63,6 +64,8 @@ public class JConsulPropertyPlaceholderConfigurerTest {
         assertEquals(value, testBean.getValue());
         assertEquals(desc, testBean.getDesc());
         assertEquals("3.3.3.3:8080,4.4.4.4:8080",testBean.getAddress());
+        assertEquals(desc, testBean.getKv());
+        assertTrue(ImmutableSet.of("3.3.3.3:8080", "4.4.4.4:8080").contains(testBean.getRandomAddress()));
     }
 
 }

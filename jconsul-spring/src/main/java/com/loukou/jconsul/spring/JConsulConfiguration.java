@@ -41,6 +41,13 @@ public class JConsulConfiguration implements InitializingBean {
         return value.isPresent() ? value.get() : defaultValue;
     }
 
+    public String randomAddress(String name) {
+        return randomAddress(name, true);
+    }
+
+    public String randomAllAddress(String name){
+        return randomAddress(name, false);
+    }
     public String randomAddress(String name, boolean passing) {
         ServiceRequestBuilder builder = jconsul.health().service(name);
         if (passing) {
@@ -61,7 +68,7 @@ public class JConsulConfiguration implements InitializingBean {
         }
     }
 
-    public String serviceAddrs(String name) {
+    public String serviceAddress(String name) {
         return serviceAddrs(name, ",", true);
     }
 

@@ -11,7 +11,7 @@ public class PlaceholderTestBean {
 
     private String kv;
 
-    @Value("#{jconsulConfig.serviceAddrs('config_unittest')}")
+    @Value("#{jconsulConfig.serviceAddress('config_unittest')}")
     private String address;
 
     private String randomAddress;

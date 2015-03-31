@@ -13,7 +13,7 @@
         ">
 
 
-  <context:annotation-config/>
+  <context:annotation-config />
   <jconsul:configuration />
   <jconsul:property-placeholder
     fallbackToFileWhenNotExists="false" location="test.properties" />
@@ -21,6 +21,9 @@
   <bean class="com.loukou.jconsul.spring.PlaceholderTestBean">
     <property name="desc"
       value="${__unittest/com.loukou.jconsul.spring.PlaceholderTestBean/desc}" />
+    <property name="kv"
+      value="#{jconsulConfig.config('__unittest/com.loukou.jconsul.spring.PlaceholderTestBean/desc')}"></property>
+      <property name="randomAddress" value="#{jconsulConfig.randomAddress('config_unittest')}"></property>
   </bean>
 
 </beans>
