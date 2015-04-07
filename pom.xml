@@ -13,6 +13,7 @@
   <modules>
     <module>jconsul-client</module>
     <module>jconsul-spring</module>
+    <module>jconsul-recipes</module>
   </modules>
 
   <properties>
