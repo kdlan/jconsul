@@ -7,14 +7,14 @@ import com.loukou.jconsul.client.util.JConsulUtils;
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
 
-abstract class UnwrapListResultBuilder<T extends UnwrapListResultBuilder<T, V>, V> extends
-        BlockingAndConsistencyBuilder<UnwrapListResultBuilder<T, V>> implements ResultRequestBuilder<V> {
+abstract class UnwrapListResultBuilder<T extends BlockingAndConsistencyBuilder<T>, V> extends
+        BlockingAndConsistencyBuilder<T> implements ResultRequestBuilder<V> {
 
     private final String path;
     private TypeToken<List<V>> type;
 
-    protected UnwrapListResultBuilder(String path, TypeToken<List<V>> type,
-            Class<? extends UnwrapListResultBuilder<T, V>> subClass, JConsulRequestBuilder requestBuilder) {
+    protected UnwrapListResultBuilder(String path, TypeToken<List<V>> type, Class<T> subClass,
+            JConsulRequestBuilder requestBuilder) {
         super(subClass, requestBuilder);
         this.path = path;
         this.type = type;

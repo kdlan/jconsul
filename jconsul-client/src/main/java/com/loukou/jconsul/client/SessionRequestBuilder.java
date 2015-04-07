@@ -56,7 +56,7 @@ public class SessionRequestBuilder extends JConsulRequestBuilder {
             return this;
         }
 
-        public SessionCreateBuilder checks(String... checks){
+        public SessionCreateBuilder checks(String... checks) {
             map.put("Checks", Arrays.asList(checks));
             return this;
         }
@@ -106,20 +106,20 @@ public class SessionRequestBuilder extends JConsulRequestBuilder {
 
     public class SessionInfoBuilder extends UnwrapListResultBuilder<SessionInfoBuilder, Session> {
 
-        public SessionInfoBuilder(String id) {
+        private SessionInfoBuilder(String id) {
             super("/session/info/" + id, LIST_SESSION_TOKEN, SessionInfoBuilder.class, SessionRequestBuilder.this);
         }
 
     }
 
     public class SessionNodeBuilder extends DirectResultBuilder<SessionListBuilder, List<Session>> {
-        public SessionNodeBuilder(String node) {
-            super("/session/node/" + node, LIST_SESSION_TOKEN, SessionNodeBuilder.class, SessionRequestBuilder.this);
+        private SessionNodeBuilder(String node) {
+            super("/session/node/" + node, LIST_SESSION_TOKEN, SessionListBuilder.class, SessionRequestBuilder.this);
         }
     }
 
     public class SessionListBuilder extends DirectResultBuilder<SessionListBuilder, List<Session>> {
-        public SessionListBuilder() {
+        private SessionListBuilder() {
             super("/session/list", LIST_SESSION_TOKEN, SessionListBuilder.class, SessionRequestBuilder.this);
         }
     }

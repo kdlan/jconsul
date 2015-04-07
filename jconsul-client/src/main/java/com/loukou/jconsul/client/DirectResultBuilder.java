@@ -4,14 +4,13 @@ import com.loukou.jconsul.client.model.JConsulResponse;
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
 
-class DirectResultBuilder<T extends DirectResultBuilder<T, V>, V> extends
-        BlockingAndConsistencyBuilder<DirectResultBuilder<T, V>> implements ResultRequestBuilder<V> {
+abstract class DirectResultBuilder<T extends BlockingAndConsistencyBuilder<T>, V> extends
+        BlockingAndConsistencyBuilder<T> implements ResultRequestBuilder<V> {
 
     private final String path;
     private TypeToken<V> type;
 
-    public DirectResultBuilder(String path, TypeToken<V> type, Class<? extends DirectResultBuilder<T, V>> subClass,
-            JConsulRequestBuilder requestBuilder) {
+    protected DirectResultBuilder(String path, TypeToken<V> type, Class<T> subClass, JConsulRequestBuilder requestBuilder) {
         super(subClass, requestBuilder);
         this.path = path;
         this.type = type;

@@ -3,9 +3,9 @@ package com.loukou.jconsul.client;
 import com.loukou.jconsul.client.model.ConsistencyMode;
 
 abstract class BlockingAndConsistencyBuilder<T extends BlockingAndConsistencyBuilder<T>> {
-    private final Class<? extends T> subClass;
+    private final Class<T> subClass;
     protected final JConsulRequestBuilder requestBuilder;
-    protected BlockingAndConsistencyBuilder(Class<? extends T> subClass,JConsulRequestBuilder requestBuilder) {
+    protected BlockingAndConsistencyBuilder(Class<T> subClass,JConsulRequestBuilder requestBuilder) {
         this.subClass = subClass;
         this.requestBuilder=requestBuilder;
     }
