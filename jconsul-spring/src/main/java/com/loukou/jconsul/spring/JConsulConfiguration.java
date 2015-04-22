@@ -100,7 +100,7 @@ public class JConsulConfiguration implements InitializingBean {
     private String getAddress(HealthService input) {
         Service service = input.getService();
         String addr = service.getAddress();
-        if (!StringUtils.hasLength(addr)) {
+        if (StringUtils.isEmpty(addr)) {
             addr = input.getNode().getAddress();
         }
         return addr + ":" + service.getPort();
