@@ -26,6 +26,12 @@ public class JConsulPropertyPlaceholderParser extends AbstractSingleBeanDefiniti
 
     @Override
     protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
+
+        String fallbackToFileWhenNotExists =element.getAttribute("fallbackToFileWhenNotExists");
+        if (StringUtils.hasLength(fallbackToFileWhenNotExists)) {
+            builder.addPropertyValue("fallbackToFileWhenNotExists", fallbackToFileWhenNotExists);
+        }
+
         String location = element.getAttribute("location");
         if (StringUtils.hasLength(location)) {
             String[] locations = StringUtils.commaDelimitedListToStringArray(location);
