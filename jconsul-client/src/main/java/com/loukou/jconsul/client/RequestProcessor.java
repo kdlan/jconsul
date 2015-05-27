@@ -30,8 +30,8 @@ class RequestProcessor {
         this.gson = new Gson();
         // As consul should run on localhost, set default connect timeout to
         // 50ms and request timeout to 200ms
-        AsyncHttpClientConfig clientConfig = new AsyncHttpClientConfig.Builder().setConnectTimeout(50)
-                .setRequestTimeout(200).build();
+        AsyncHttpClientConfig clientConfig = new AsyncHttpClientConfig.Builder().setConnectTimeout(500)
+                .setRequestTimeout(2000).build();
         this.client = new AsyncHttpClient(clientConfig);
     }
 
